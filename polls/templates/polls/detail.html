@@ -1,6 +1,16 @@
 <h1>{{ question.question_text }}</h1>
-<ul>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+投票者がラジオボタンの1つを選択し、フォームを送信すると、POSTデータ choice=# （＃は選んだ選択肢のID）が送信される．
+<form action="{% url 'polls:vote' question.id %}" method="post">
+{% csrf_token %}
+POSTフォームはデータを改竄される恐れがあるため，クロスサイトリクエストフォージェリを心配する必要がある．
+Djangoは % csrf_token % テンプレートタグを使用することで防ぐことが可能．<br>
+forloop.counterはforタグのループが何度実行されたかを表す値である．<br> <br>
 {% for choice in question.choice_set.all %}
-    <li>{{ choice.choice_text }}</li>
+    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
 {% endfor %}
-</ul>
+<input type="submit" value="Vote">
+</form>
